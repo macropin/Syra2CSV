@@ -7,7 +7,7 @@ can be imported into your favourite accounting package. We use Saasu, so the CSV
 
 ## Getting started
 
-1. Make sure you have the required python deps installed (eg Beautiful Soup). See ./deployment/pip-reqs.txt for pip requirements
+1. Make sure you have the required python deps installed (eg Beautiful Soup). See ./deployment/pip-req.txt for pip requirements
 
 2. Set your username and password in ./src/settings.py
 
