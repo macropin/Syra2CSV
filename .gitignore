@@ -1,0 +1,7 @@
+*.pyc
+.Python
+.idea/
+bin/
+include/
+lib/
+tmp/
