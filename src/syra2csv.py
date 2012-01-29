@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+
+#
+# Syra Systems Transaction Data Scrapper
+#
+# http://github.com/macropin/Syra2CSV
+#
+
+
 from datetime import datetime
 from decimal import Decimal
 
