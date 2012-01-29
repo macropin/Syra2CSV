@@ -11,3 +11,8 @@ RESELLER_PASSWORD='' # Set Me
 
 DO_DOWNLOAD = True # Or False, used for testing
 DEBUG = False
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
