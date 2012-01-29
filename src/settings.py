@@ -1,4 +1,4 @@
-# Settings for crazy2csv
+# Settings for syra2csv
 
 import os
 
