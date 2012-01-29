@@ -13,4 +13,4 @@ can be imported into your favourite accounting package. We use Saasu, so the CSV
 
 3. Run ./src/syra2csv.py. If all goes well your csv extract should be found in ./tmp/report.csv
 
-- Andrew Cutler
+-- Andrew Cutler
