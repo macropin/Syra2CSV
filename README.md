@@ -1,4 +1,4 @@
-# Aust Domains (Syra Systems) Reseller Transactions to CSV
+# Syra Systems (Aust Domains / Crazy Domains) Reseller Transactions to CSV
 
 Problem: Aust Domains / Syra Systems do not provide an API for extracting the financial transaction information from their reseller system.
 
