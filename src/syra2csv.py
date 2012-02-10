@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Syra Systems Transaction Data Scrapper
+# Syra Systems Transaction Data Scraper
 #
 # http://github.com/macropin/Syra2CSV
 #
