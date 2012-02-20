@@ -13,7 +13,7 @@ can be imported into your favourite accounting package. We use Saasu, so the CSV
 
 3. Run ./src/syra2csv.py. If all goes well your csv extract should be found in ./tmp/report.csv
 
-## Importing into Saasu
+## Importing the transactions into Saasu
 
 1. Create the appropriate COGS and Income accounts for domain sales / purchases.
 
@@ -23,7 +23,7 @@ can be imported into your favourite accounting package. We use Saasu, so the CSV
 
 4. Finally create either 'COGS Purchases' or 'Commission Sales' items for the transactions imported.
 
-NB. COGS purchases are those where the items where paid for by reseller credit and are a negative transaction,
+NB. COGS purchases are those where the items were paid for by reseller credit and are a negative transaction,
 whereas the positive transactions paid for by credit card are treated as commission sales.
 
 -- Andrew Cutler
