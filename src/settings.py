@@ -9,6 +9,8 @@ TEMP_DIR = os.path.join(PROJECT_PATH, '..', 'tmp',)
 RESELLER_USERNAME='' # Set Me
 RESELLER_PASSWORD='' # Set Me
 
+REPORT_PAGES_SCRAPE = 1 # How many pages to scrape
+
 DO_DOWNLOAD = True # Or False, used for testing
 DEBUG = False
 
