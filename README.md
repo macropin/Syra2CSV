@@ -13,4 +13,17 @@ can be imported into your favourite accounting package. We use Saasu, so the CSV
 
 3. Run ./src/syra2csv.py. If all goes well your csv extract should be found in ./tmp/report.csv
 
+## Importing into Saasu
+
+1. Create the appropriate COGS and Income accounts for domain sales / purchases.
+
+2. Create a 'bank account' for Syra Systems transactions to be imported into.
+
+3. Then using the Saasu import transaction feature, import the CSV file into the 'bank' account created previously.
+
+4. Finally create either 'COGS Purchases' or 'Commission Sales' items for the transactions imported.
+
+NB. COGS purchases are those where the items where paid for by reseller credit and are a negative transaction,
+whereas the positive transactions paid for by credit card are treated as commission sales.
+
 -- Andrew Cutler
