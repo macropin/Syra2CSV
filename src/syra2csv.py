@@ -28,6 +28,9 @@ LOGIN_FORM=dict(submitted='TRUE', reseller_username=RESELLER_USERNAME, reseller_
 
 
 def login(LOGIN_FORM, LOGIN_URL):
+    """
+        Login to Syra, return a urllib obj
+    """
 
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
     urllib2.install_opener(opener)
@@ -43,6 +46,9 @@ def login(LOGIN_FORM, LOGIN_URL):
 
 
 def parse_report_page(page):
+    """
+        Parse the financial transaction report page and return two dicts, generic and saasu
+    """
 
     # Parse the index page 'report'
     soup = BeautifulSoup(page)
@@ -53,48 +59,62 @@ def parse_report_page(page):
     saasu_obj = []
 
     for tr in data:
+
         row = tr.findAll('td')
+
+        invoice = row[0].find('a').contents[0]
+
+        # Download detail page
+        if DO_DOWNLOAD:
+            download_detail_page(opener, invoice, TEMP_DIR)
+        # Parse Details
+        client_amount, details = parse_invoice_detail_page(invoice, TEMP_DIR)
+
         row_obj = {
-            'invoice': row[0].find('a').contents[0],
+            'invoice': invoice,
             'date': datetime.strptime(row[1].contents[0], '%d %b %Y'),
             'paid': Decimal(row[2].find('div').contents[0].strip('$ ')),  # transaction amount
             'profit': Decimal(row[3].find('div').contents[0].strip('$ ')),
+            'client_amount': client_amount, # amount paid by client, includes credit card fees (if paid by CC)
             'currency': row[4].contents[0],
             'paid_by': row[5].contents[0],
+            'details': details, # transation details, eg domains sold
             }
 
         # Saasu CSV	Format: Date, Amount, Description, Reference
-        # As per discussions with accountant, treat positive transactions as 'fee received' (income / sale)
-        # negative transactions are purchases against reseller credit (cost of sales)
+
+        # Important Details About the Logic:
+        # As per discussions with accountant, we treat:
+        # Positive transactions as 'fee received' (income / sale) (easy!)
+        # Negative and Zero profit transactions are COGS (cost of sales) or Expense transactions (depending on whether we resold them, or for internal use)
+        # In the case of COGS we have manually invoiced the client in Saasu. (invoiced outside of Syra)
+        # For these COGS / Expense transactions, if they are paid by Credit Card, then we manually update the payment method in Saasu after importing to reflect the payment from our own corp CC.
 
         if row_obj['profit'] > 0:
             saasu_row_obj = (
-                            row_obj['date'],
-                            Decimal(row_obj['profit']),
-                            'Domain Sale Commission. Transaction total %s. Syra Invoice %s.' % (row_obj['paid'], row_obj['invoice']),
-                            'Paid by %s' % (row_obj['paid_by']),
-                            )
+                row_obj['date'],
+                Decimal(row_obj['profit']),
+                'Commission Income. Transaction total %s. Syra Invoice %s. Details: %s.' % (row_obj['paid'], row_obj['invoice'], row_obj['details']),
+                'Paid by %s' % (row_obj['paid_by']),
+                )
         else:
             saasu_row_obj = (
                 row_obj['date'],
-                Decimal(row_obj['profit']),
-                'Cost of Sales. Transaction total %s. Syra Invoice %s.' % (row_obj['paid'], row_obj['invoice']),
+                Decimal(-row_obj['client_amount']),
+                'COGS or Expense. Transaction total %s. Syra Invoice %s. Details: %s.' % (row_obj['paid'], row_obj['invoice'], row_obj['details']),
                 'Paid by %s' % (row_obj['paid_by']),
                 )
 
         saasu_obj.append(saasu_row_obj)
         data_obj.append(row_obj)
 
-        # Download detail page
-        # TODO: Download / parse the detail and use it for the description.
-        #download_detail_page(opener, row_obj['invoice'], TEMP_DIR)
-
     return saasu_obj, data_obj
 
 
-# TODO: NB, this function is not actually used.
 def download_detail_page(opener, invoice, TEMP_DIR):
-
+    """
+        Download the transaction detail pages and save to disk
+    """
     fname = '%s.html' % (invoice,)
     fpath = os.path.join(TEMP_DIR, fname)
 
@@ -111,40 +131,42 @@ def download_detail_page(opener, invoice, TEMP_DIR):
 
     return page
 
-#
-#def parse_detail_page(data_obj):
-#
-#    # Parse the detail page
-#    for row in data_obj:
-#        invoice = row['invoice']
-#
-#
-#        # Download the detail page
-#        if DO_DOWNLOAD:
-#
-#            download_detail_page(opener, invoice, TEMP_DIR)
-#
-#        else:
-#            f = open(fpath, 'r')
-#            page = f.read()
-#            f.close()
-#
-#        # Parse the detail page
-#        soup = BeautifulSoup(page)
-#        for table in soup.findAll('table', attrs = {'width':'560'} ): #.findNext('tr'):
-#            if DEBUG:
-#                print table
-#
-#                #print data
-#                #data = soup.find(text='Product Details').findNext('tr')
-#                #print soup.find(text='Product Details')
-#
-#                print '*****************************************'
-#
-#    return None # We haven't actually done any useful work yet.
+
+def parse_invoice_detail_page(invoice, TEMP_DIR):
+    """
+        Parse the Invoice Detail page, previously downloaded
+        Returns, the client transaction amount and a summary of the transaction detail
+    """
+    fname = '%s.html' % (invoice,)
+    fpath = os.path.join(TEMP_DIR, fname)
+
+    # open already downloaded file
+    f = open(fpath, 'r')
+    page = f.read()
+    f.close()
+
+    # Parse the detail page
+    soup = BeautifulSoup(page)
+
+    # Get client charged amount
+    client_amount = Decimal(soup.find(text='Client Total Invoice:').findParent('tr').findAll('td')[1].contents[0].strip('$ ').strip(' AUD'))
+    if DEBUG:
+        print client_amount
+
+    # Get sale details
+    details = ''
+    for details_td in soup.find(text='Product Name').findParents('table')[0].findAll('td')[4:]:
+        details = details + ' ' + details_td.renderContents()
+    if DEBUG:
+        print details
+
+    return client_amount, details
 
 
 def append_saasu_csv(saasu_obj):
+    """
+        Append our saasu dict to our output csv
+    """
 
     # Saasu CSV	Format: Date, Amount, Description, Reference
     # http://help.saasu.com/import/

@@ -14,6 +14,7 @@ REPORT_PAGES_SCRAPE = 1 # How many pages to scrape
 DO_DOWNLOAD = True # Or False, used for testing
 DEBUG = False
 
+# NB It's a better idea to put your settings in a local_settings.py overrides file.
 try:
     from local_settings import *
 except ImportError:

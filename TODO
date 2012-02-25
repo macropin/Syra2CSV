@@ -3,7 +3,6 @@ Missing features:
 
 * Automatically calculate REPORT_PAGES_SCRAPE
 * Date ranged retrieval
-* Retrieve details of each transaction from the detail page
 * Error handling
 * Optional description messages for different transaction types
 
