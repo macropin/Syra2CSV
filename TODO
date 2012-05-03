@@ -6,4 +6,7 @@ Missing features:
 * Error handling
 * Optional description messages for different transaction types
 
+Caveat: Doesn't handle reseller credit transfers correctly. Eg when you purchase credit with credit card. 
+I think this needs to be handled with two transactions. a) Create a COGS purchase of credit b) manual transfer from unknown to Syra account, of the amount less the transaction / credit card fee.
+
 .... but since it works well enough for our needs, these might never get written.
