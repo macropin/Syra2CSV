@@ -1,6 +1,8 @@
-# Syra Systems (Aust Domains / Crazy Domains) Export Reseller Transactions to CSV
+# Dreamscrape (previously known as syra2csv)
 
-Problem: Aust Domains / Syra Systems do not provide an API for exporting the financial transaction information from their reseller system.
+Scrape the Dreamscape (aka Syra Systems / Aust Domains / Crazy Domains Reseller) Transactions to CSV.
+
+Problem: Dreamscape do not provide an API for exporting the financial transaction information from their reseller system.
 
 Solution: This little hacky script screen-scrapes the reseller website and converts the financial transactions into a CSV file which
 can be imported into your favourite accounting package. We use Saasu, so the CSV format is the Saasu CSV format.

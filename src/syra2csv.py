@@ -24,7 +24,7 @@ from settings import *
 # Constants
 LOGIN_URL = 'https://www.secureapi.com.au/reseller/home/reseller_login/'
 DOWNLOAD_URL = 'https://www.secureapi.com.au/reseller/reseller/reseller_view_payments/'
-LOGIN_FORM=dict(submitted='TRUE', reseller_username=RESELLER_USERNAME, reseller_password=RESELLER_PASSWORD, submit='Login Now')
+LOGIN_FORM = dict(submitted='TRUE', reseller_username=RESELLER_USERNAME, reseller_password=RESELLER_PASSWORD, submit='Login Now')
 
 
 def login(LOGIN_FORM, LOGIN_URL):
@@ -73,8 +73,8 @@ def parse_report_page(page):
         row_obj = {
             'invoice': invoice,
             'date': datetime.strptime(row[1].contents[0], '%d %b %Y'),
-            'paid': Decimal(row[2].find('div').contents[0].strip('$ ')),  # transaction amount
-            'profit': Decimal(row[3].find('div').contents[0].strip('$ ')),
+            'paid': Decimal(row[2].contents[0].strip('$')),  # transaction amount
+            'profit': Decimal(row[3].contents[0].strip('$ ')),
             'client_amount': client_amount, # amount paid by client, includes credit card fees (if paid by CC)
             'currency': row[4].contents[0],
             'paid_by': row[5].contents[0],
@@ -149,14 +149,14 @@ def parse_invoice_detail_page(invoice, TEMP_DIR):
     soup = BeautifulSoup(page)
 
     # Get client charged amount
-    client_amount = Decimal(soup.find(text='Client Total Invoice:').findParent('tr').findAll('td')[1].contents[0].strip('$ ').strip(' AUD'))
+    client_amount = Decimal(soup.find(text='Client Total Invoice:').findParent('tr').findAll('td')[1].contents[0].strip('$').strip(' AUD'))
     if DEBUG:
         print client_amount
 
     # Get sale details
     details = ''
-    for details_td in soup.find(text='Product Name').findParents('table')[0].findAll('td')[4:]:
-        details = details + ' ' + details_td.renderContents()
+    for details_td in [a.findParents('table')[0].findAll('td')[2:] for a in (td.find(text='Product') for td in soup.findAll("td", {"class": "productDesc"})) if a]:
+        details = details + details_td[0].renderContents() + ' ' + details_td[1].renderContents()
     if DEBUG:
         print details
 
