@@ -74,7 +74,7 @@ def parse_report_page(page):
             'invoice': invoice,
             'date': datetime.strptime(row[1].contents[0], '%d %b %Y'),
             'paid': Decimal(row[2].contents[0].strip('$')),  # transaction amount
-            'profit': Decimal(row[3].contents[0].strip('$ ')),
+            'profit': Decimal(row[3].contents[0].strip('$  ').replace(',', '')),
             'client_amount': client_amount, # amount paid by client, includes credit card fees (if paid by CC)
             'currency': row[4].contents[0],
             'paid_by': row[5].contents[0],
